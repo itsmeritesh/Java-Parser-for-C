@@ -1,0 +1,66 @@
+
+cprogram ::= 	cprogram function_def
+	  	| cprogram function 
+             	| ;
+function_def::= SPECIFIER RETURNTYPE VARIABLE LEFTPARAN arguement_list RIGHTPARAN SEMI;
+
+function::= SPECIFIER RETURNTYPE VARIABLE LEFTPARAN arguement_list RIGHTPARAN block;
+
+arguement_list  ::= arguement_list COMMA arguement | arguement |;
+
+arguement ::= RETURNTYPE VARIABLE;
+
+globalblock::= 	block
+		|statement;
+
+block ::= LEFTBRACE statement_list RIGHTBRACE 
+		|LEFTBRACE RIGHTBRACE ;
+		
+statement_list ::= statement_list statements 
+		| statements
+		 ;
+		
+statement ::= 	ifstatement 
+		| whilestatement 
+		| dowhilestatement 
+		| forstatement 
+		| switchstmt
+		| assignmentstmt
+		|SEMI ;
+     
+ifstatement ::= IF LEFTPARAN condition RIGHTPARAN globalblock ELSE globalblock
+                | 
+
+forstatement ::= FOR LEFTPARAN VARIABLE RIGHTPARAN globalblock;
+
+whilecondition::=WHILE LEFTPARAN condition RIGHTPARAN
+		|WHILE LEFTPARAN statement RIGHTPARAN;
+		;
+
+whilestatment::=  whilecondition  globalblock;
+		
+dowhilestatement::= do globalblock whilecondition SEMI;
+
+switchstmt:	SWITCH LEFTPARAN expr RIGHTPARAN LEFTBRACE cases RIGHTBRACE	
+		;
+cases:		casestmt cases
+		|
+		;
+casestmt:	CASE  expr COLON statement_list
+		|DEFAULT COLON statement_list	
+		;
+
+ 
+
+					
+		
+		
+		
+
+		
+
+		
+		
+		
+          
+	

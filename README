@@ -1,0 +1,28 @@
+PARSER FOR C LANGUAGE WRITTEN ENTIRELY IN JAVA
+--------------------------------------------------------------------
+
+ - This is a project that is a parser for the C Language written entirely in Java. The project folder is organized as an Eclipse project. 
+
+ - This project uses the Java CUP library. Its very similar to Yacc where you write the grammar specifications. 
+		http://www2.cs.tum.edu/projects/cup/
+
+ - This project is licensed under the WTFPL 
+		http://sam.zoy.org/wtfpl/
+
+ - The grammar specifications are written in the "parser.cup" file contained in the project
+
+ - Typical JCup projects use Jlex for tokenizing the input documents. I chose to write my own tokenizer instead of going through the pain of figuring JLex out. The tokenizer is contained in the MyScanner class. The symbols the tokenizer returns is contained in the Sym class. Please feel free to change this. It also uses OsterMiller utils for tokenization.
+
+- The output of the project is the predicate logic describing all the paths the program follows. It can be used for flow analysis of C programs. 
+
+------------------------------------------------------------------------
+Instructions for Executing the program
+------------------------------------------------------------------------
+
+Instructions for executing :
+
+java -jar java-cup-11a.jar parser.cup 
+
+run test.java 
+
+input file name is hardcoded in the test.java file. 

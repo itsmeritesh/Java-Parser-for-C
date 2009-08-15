@@ -1,0 +1,167 @@
+import java_cup.runtime.*;
+import Handler.*;
+
+/* Preliminaries to set up and use the scanner.  */
+init with {: myscanner.init(); :};
+scan with {: return getScanner().next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal      SEMI , SPECIFIER , RETURNTYPE ,  LEFTPARAN , RIGHTPARAN, EQUALS, STAR ;
+terminal    COMMA , LEFTBRACE , RIGHTBRACE , FOR , WHILE , DO , IF , ELSE, SWITCH, BREAK, CASE;
+terminal  LT , GT , EXCL ;
+terminal java.lang.String VARIABLE, COMPARATOR;
+
+/* Non-terminals */
+non terminal cprogram , function_def , function , arguement_list , arguement , globalblock , block ;
+non terminal statement , statement_list , ifstatement , whilestatement , dowhilestatement ;
+non terminal forstatement , switchstmt,  whilecondition , elsestmt, specifier_list;
+non terminal function_call, return_type ,function_call_no_semi,inlinefunction;
+non terminal java.lang.String variable_nt,condition, comparator_nt;
+
+
+/* The grammar */
+
+cprogram 	::= cprogram function_def
+			| cprogram function 
+			|
+            ;
+
+function	::= return_type variable_nt:vari LEFTPARAN arguement_list RIGHTPARAN globalblock
+	{: if(FileStuff.debugMode) System.out.println("parent_function_name " + vari); 
+	 HandleFlow.insertNode(vari+"#","parent"); :}
+	;
+
+	
+function_def::= return_type variable_nt:vari LEFTPARAN arguement_list RIGHTPARAN SEMI
+   			{: if(FileStuff.debugMode) System.out.println("function definition " + vari); 
+   			HandleFlow.insertNode(vari+"#","parentdef");:}
+   			;
+
+inlinefunction	::= variable_nt variable_nt:vari LEFTPARAN arguement_list RIGHTPARAN globalblock
+	{: if(FileStuff.debugMode) System.out.println("parent_function_name " + vari); 
+	 HandleFlow.insertNode(vari+"#","parent"); :}
+	;
+	
+return_type ::= RETURNTYPE 
+				{: if(FileStuff.debugMode) System.out.println("return type"); :}				
+				| 
+				{: if(FileStuff.debugMode) System.out.println("empty return type"); :}
+				;	
+				
+arguement_list  ::= arguement_list COMMA arguement
+			     {: if(FileStuff.debugMode) System.out.println("Arguement List"); :}
+				 | arguement 	
+				 {: if(FileStuff.debugMode) System.out.println("Single Arguement"); :}						
+				 |
+				 {: if(FileStuff.debugMode) System.out.println("empty arguement list"); :}
+				 ;
+
+arguement ::= RETURNTYPE VARIABLE
+              | 
+              RETURNTYPE
+              
+			 ;				
+
+globalblock::= 	block 
+				{:if(FileStuff.debugMode) System.out.println("globalblock reached"); 
+				:}
+				;
+
+block 	::= LEFTBRACE statement_list RIGHTBRACE 
+			{:if(FileStuff.debugMode) System.out.println("block with statement_list"); :}	
+			|LEFTBRACE RIGHTBRACE
+			{:if(FileStuff.debugMode) System.out.println("empty block"); :} ;
+		
+statement_list ::= statement_list statement 
+                {:if(FileStuff.debugMode) System.out.println("statement list"); :}
+				| statement
+				{:if(FileStuff.debugMode) System.out.println("statement"); :}
+		 ;
+		
+statement ::=  function_call:fc	
+				{:if(FileStuff.debugMode) System.out.println("function" + fc); :}
+			  |SEMI 
+			  {:if(FileStuff.debugMode) System.out.println("semi colon reached"); :}
+			  |ifstatement
+			  | whilestatement
+			  | dowhilestatement
+			   {: System.out.println("dowhile statement reached"); :}
+			 | inlinefunction
+			  ;
+			  
+ifstatement ::= IF condition:cond  globalblock elsestmt
+				{: System.out.println("if condition is  :" + cond);
+				  HandleFlow.insertNode("ifstmt " + cond + " ","function");
+				   :}
+			|
+			IF condition:cond  globalblock
+			{: System.out.println("if condition is  :" + cond);
+			HandleFlow.insertNode("ifstmt" + cond + " ","function");
+				   :}
+			
+                ;
+			
+condition ::= LEFTPARAN variable_nt:e1 EQUALS variable_nt:e2 RIGHTPARAN
+                  {: RESULT = e1+ "==" + e2 ; 
+           if(FileStuff.debugMode) System.out.println("condition : " + e1+ "=="+ e2); HandleFlow.insideIf();:}
+            |   
+            LEFTPARAN variable_nt:e1 LT variable_nt:e2 RIGHTPARAN
+             {: RESULT = e1+ "<"+ e2 ; 
+           if(FileStuff.debugMode)  System.out.println("condition : " + e1+ "<" + e2);HandleFlow.insideIf();:}
+		 |   
+            LEFTPARAN variable_nt:e1 GT  variable_nt:e2 RIGHTPARAN
+             {: RESULT = e1+ ">"+ e2 ; 
+              if(FileStuff.debugMode) System.out.println("condition : " + e1+ ">" + e2);HandleFlow.insideIf();:}                      
+         |   
+            LEFTPARAN variable_nt:e1 GT EQUALS variable_nt:e2 RIGHTPARAN
+             {: RESULT = e1+ ">="+ e2 ; 
+              if(FileStuff.debugMode) System.out.println("condition : " + e1+ ">=" + e2);HandleFlow.insideIf();:}
+         |   
+            LEFTPARAN variable_nt:e1 LT EQUALS  variable_nt:e2 RIGHTPARAN
+             {: RESULT = e1+ "<="+ e2 ; 
+              if(FileStuff.debugMode) System.out.println("condition : " + e1+ "<=" + e2);HandleFlow.insideIf();:}
+         |   
+            LEFTPARAN variable_nt:e1 EXCL EQUALS variable_nt:e2 RIGHTPARAN
+             {: RESULT = e1+ "!="+ e2 ; 
+              if(FileStuff.debugMode) System.out.println("condition : " + e1+ "!=" + e2);HandleFlow.insideIf();:}
+           
+             ;
+
+elsestmt ::= ELSE globalblock
+              {: 
+                HandleFlow.insertNode("else","function"); 
+                 :};
+			
+whilestatement ::= WHILE condition:cond  globalblock
+				{:  System.out.println("while condition is :" + cond); :}
+				;
+			
+function_call ::= variable_nt EQUALS variable_nt:e LEFTPARAN  arguement_list RIGHTPARAN SEMI
+				 {: System.out.println("function called " + e); RESULT = e; 
+				 Handler.HandleFlow.insertNode(e,"function");:}
+				 |
+				 variable_nt:e LEFTPARAN arguement_list RIGHTPARAN SEMI
+				 {: System.out.println("function called " + e); RESULT = e; 
+				 Handler.HandleFlow.insertNode(e,"function"); :}	
+				 |
+				 /* newly added */
+				 variable_nt:e LEFTPARAN function_call_no_semi RIGHTPARAN SEMI			 
+				;
+function_call_no_semi ::=  variable_nt:e LEFTPARAN arguement_list RIGHTPARAN
+				 {: System.out.println("function called " + e); RESULT = e; 
+				 Handler.HandleFlow.insertNode(e,"function"); :}	
+				 ;						
+
+dowhilestatement ::= DO globalblock WHILE LEFTPARAN condition:cond RIGHTPARAN SEMI
+                  {: System.out.println("dowhile condition " + cond); :}
+                  ;
+
+variable_nt ::= VARIABLE:e
+				{:  RESULT = myscanner.lastScanned ;  :};				
+   
+comparator_nt ::= COMPARATOR:cmp
+					{:  RESULT = myscanner.lastScanned ;  :};				
+	        
+            
+	      
+	      

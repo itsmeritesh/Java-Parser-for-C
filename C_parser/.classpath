@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry path="" kind="src"/>
+	<classpathentry path="org.eclipse.jdt.launching.JRE_CONTAINER" kind="con"/>
+	<classpathentry path="java-cup-11a.jar" kind="lib"/>
+	<classpathentry path="E:/First_Semester/MFC/parser/Final/ostermillerutils_1_06_01.jar" kind="lib"/>
+	<classpathentry path="" kind="output"/>
+</classpath>

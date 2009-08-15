@@ -1,0 +1,86 @@
+import java_cup.runtime.*;
+
+/* Preliminaries to set up and use the scanner.  */
+init with {: scanner.init();              :};
+scan with {: return scanner.next_token(); :};
+
+/* Terminals (tokens returned by the scanner). */
+terminal      SEMI , SPECIFIER , RETURNTYPE , VARIABLE , LEFTPARAN , RIGHTPARAN;
+terminal    COMMA , LEFTBRACE , RIGHTBRACE , FOR , WHILE , DO , IF , ELSE;
+
+/* Non-terminals */
+non terminal cprogram , function_def , function , arguement_list , arguement , globalblock , block ;
+non terminal statement , statement_list , ifstatement , whilestatement , dowhilestatement ;
+non terminal forstatement , switchstmt, condition , whilecondition , elsestmt;
+
+
+/* The grammar */
+
+cprogram 	::= 	cprogram function_def
+			| cprogram function 
+            | 
+            ;
+            
+function_def::= SPECIFIER RETURNTYPE VARIABLE LEFTPARAN arguement_list RIGHTPARAN SEMI;
+
+function	::= SPECIFIER RETURNTYPE VARIABLE LEFTPARAN arguement_list RIGHTPARAN block;
+
+arguement_list  ::= arguement_list COMMA arguement | arguement |;
+
+arguement ::= RETURNTYPE VARIABLE;
+
+globalblock::= 	block
+			|statement;
+
+block 	::= LEFTBRACE statement_list RIGHTBRACE 
+			|LEFTBRACE RIGHTBRACE ;
+		
+statement_list ::= statement_list statement 
+				| statement
+		 ;
+		
+statement ::= 	 whilestatement 
+			| dowhilestatement 
+			| forstatement 
+			| switchstmt
+			|SEMI 
+			/*| ifstatement */
+			;
+     
+     /* | assignmentstmt */
+     
+condition ::= VARIABLE ;
+     
+ifstatement 	::= IF LEFTPARAN condition RIGHTPARAN globalblock elsestmt
+		|
+		IF LEFTPARAN condition RIGHTPARAN globalblock
+                ;
+
+elsestmt ::= ELSE globalblock
+		;	
+				
+forstatement ::= FOR LEFTPARAN VARIABLE RIGHTPARAN globalblock;
+
+whilecondition::=WHILE LEFTPARAN condition RIGHTPARAN
+				|WHILE LEFTPARAN statement RIGHTPARAN
+				;
+
+whilestatment	::=  whilecondition  globalblock;
+		
+dowhilestatement	::= DO globalblock whilecondition SEMI;
+
+
+
+ /*switchstmt	::=	SWITCH LEFTPARAN expr RIGHTPARAN LEFTBRACE cases RIGHTBRACE	
+			;
+cases	::=	casestmt cases
+		|
+		;
+casestmt  ::=	CASE  expr COLON statement_list
+			|DEFAULT COLON statement_list	
+			;
+	*/
+	        
+            
+	      
+	      
